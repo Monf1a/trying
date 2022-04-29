@@ -1,0 +1,40 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: chd-daka
+
+on:
+  push:
+  schedule:
+    - cron: '36 23,4 * * *'
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 'Checkout codes'
+      uses: actions/checkout@v2
+      # 设置服务器时区为东八区 
+    - name: Set time zone
+      run: sudo timedatectl set-timezone 'Asia/Shanghai'
+      
+    - name: Set up Python 3.9.5
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.9.5"
+    - name: 'Install dependencies'
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: 'chd-daka'
+      env:
+        username: ${{ secrets.username }}
+        password: ${{ secrets.password }}
+        address: ${{ secrets.address }}
+        wxkey: ${{ secrets.wxkey}}
+        # email: ${{ secrets.email }}
+        latitude: ${{ secrets.latitude }}
+        longitude: ${{ secrets.longitude }}
+      run: |
+        python ./main-action.py
